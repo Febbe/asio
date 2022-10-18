@@ -2043,31 +2043,36 @@
 #endif // !defined(BOOST_ASIO_UNUSED_VARIABLE)
 
 // Support the co_await keyword on compilers known to allow it.
-#if !defined(BOOST_ASIO_HAS_CO_AWAIT)
-# if !defined(BOOST_ASIO_DISABLE_CO_AWAIT)
-#  if defined(BOOST_ASIO_MSVC)
-#   if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705) && !defined(__clang__)
-#    define BOOST_ASIO_HAS_CO_AWAIT 1
+#if !defined(ASIO_HAS_CO_AWAIT)
+# if !defined(ASIO_DISABLE_CO_AWAIT)
+#  if has_include(<version>) && has_include(<coroutine>) && defined(__cpp_coroutines) && (__cpp_coroutines >= 201707L) 
+#   include <version>
+#   if defined(__cpp_lib_coroutine) && (__cpp_lib_coroutine >= 201902L)
+#    define ASIO_HAS_CO_AWAIT 1
+#   endif // defined(__cpp_lib_coroutine) && (__cpp_lib_coroutine >= 201902L)
+#  if !defined(ASIO_HAS_CO_AWAIT) && defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705) 
+#    define ASIO_HAS_CO_AWAIT 1
 #   elif (_MSC_FULL_VER >= 190023506)
 #    if defined(_RESUMABLE_FUNCTIONS_SUPPORTED)
-#     define BOOST_ASIO_HAS_CO_AWAIT 1
+#     define ASIO_HAS_CO_AWAIT 1
 #    endif // defined(_RESUMABLE_FUNCTIONS_SUPPORTED)
 #   endif // (_MSC_FULL_VER >= 190023506)
-#  elif defined(__clang__)
+#  if !defined(ASIO_HAS_CO_AWAIT) && defined(__clang__)
 #   if (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
 #    if __has_include(<experimental/coroutine>)
-#     define BOOST_ASIO_HAS_CO_AWAIT 1
+#     define ASIO_HAS_CO_AWAIT 1
 #    endif // __has_include(<experimental/coroutine>)
 #   endif // (__cplusplus >= 201703) && (__cpp_coroutines >= 201703)
-#  elif defined(__GNUC__)
+#  if !defined(ASIO_HAS_CO_AWAIT) && defined(__GNUC__)
 #   if (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
 #    if __has_include(<coroutine>)
-#     define BOOST_ASIO_HAS_CO_AWAIT 1
+#     define ASIO_HAS_CO_AWAIT 1
 #    endif // __has_include(<coroutine>)
 #   endif // (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
 #  endif // defined(__GNUC__)
-# endif // !defined(BOOST_ASIO_DISABLE_CO_AWAIT)
-#endif // !defined(BOOST_ASIO_HAS_CO_AWAIT)
+# endif // !defined(ASIO_DISABLE_CO_AWAIT)
+#endif // !defined(ASIO_HAS_CO_AWAIT)
 
 // Standard library support for coroutines.
 #if !defined(BOOST_ASIO_HAS_STD_COROUTINE)
